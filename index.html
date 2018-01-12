@@ -1,0 +1,295 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>路灯管理系统</title>
+    <!-- CSS调用 -->
+    <link rel="stylesheet" type="text/css" href="./web/Libs/ol/ol.css">
+    <link rel="stylesheet" type="text/css" href="./web/Styles/css/StyleSheet.css">
+    <link rel="stylesheet" type="text/css" href="./web/Styles/css/drawData.css">
+    <link rel="stylesheet" type="text/css" href="./bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="./web/Libs/layui/css/layui.css">
+    <!-- Insert this line above script imports  -->
+    <script>
+    if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    }
+    </script>
+    <!--  引入第三方插件库 -->
+    <script src="./web/Libs/jquery/jquery-3.2.1.min.js"></script>
+    <script src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- <script src="./web/Scripts/layer/layer.js"></script> -->
+    <script src="./web/Scripts/database/dbService.js"></script>
+    <script src="./web/Libs/layui/layui.js"></script>
+    <!--OpenLayers库-->
+    <!--     <script src="./web/Libs/ol/ol-debug.js"></script> -->
+    <script src="./web/Libs/ol/ol.js"></script>
+    <!-- Insert this line after script imports -->
+    <script>
+    if (window.module) module = window.module;
+    </script>
+</head>
+
+<body>
+    <!-- logo -->
+    <div id="logoImg"></div>
+    <!-- map区，作为背景 -->
+    <div id="map"></div>
+    <!-- 用户功能区 -->
+    <div id="activeUserFunc"></div>
+    <div id="activeAdvFunc"></div>
+    <div id="lampOnMapFunction">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" onclick="tableIDDisplayFunc()" checked>列表显示</label>
+        </div>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" value="">备用复选</label>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading" id="adminOperaOpen">
+                <h4 class="panel-title">
+                <!-- <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">管理员操作</a> -->
+                <button class="btn btn-default">管理员操作</button>
+            </h4>
+            </div>
+            <div id="adminSelect" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="adminOperation" id="addLamp">添加修改
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="adminOperation" id="deleteLamp">删除注销
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="adminOperation" id="finishLamp" checked>查看模式
+                        </label>
+                    </div>
+                    <div>
+                        <hr>
+                        <button type="button" class="btn btn-default btn-sm" onclick="Lamptoggle()">灯控命令</button>
+                        <hr>
+                    </div>
+                    <a class="dropdown-toggle" id="advancedOperation" data-toggle="dropdown" href="#">高级 <span class="caret"></span> </a>
+                    <hr>
+                    <div id="advancedSelectID" class="panel-collapse collapse">
+                        <table class="table table-condensed">
+                            <tbody>
+                                <tr>
+                                    <td><a href="#" onclick="informationSerial()">串口信息</a></td>
+                                </tr>
+                                <tr>
+                                    <td><a href="#" onclick="changeChannel()">信道设置</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <button class="btn btn-default" data-toggle="modal" data-target="#myModal" onclick="lockOperation()">锁定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 灯控命令界面 -->
+    <div id="commandDisplayID">
+        <hr> ***灯控命令***
+        <hr>
+        <div class="text-left" style="padding: 5px">
+            <label>选择</label>
+            <div id="lampGroupSelectID">
+                <label class="radio-inline">
+                    <input type="radio" name="optionsRadiosinline" id="allLampSelectID" value="option1" checked> 全部
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="optionsRadiosinline" id="groupLampSelectID" value="option2">分组
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="optionsRadiosinline" id="singleLampSelectID" value="option2">单灯
+                </label>
+            </div>
+            <label>操作</label>
+            <div>
+                <label class="radio-inline">
+                    <input type="radio" name="optionsRadiosinline1" id="manualOperationID" value="option1" checked> 手动
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="optionsRadiosinline1" id="autoOperationID" value="option2">分时自动
+                </label>
+            </div>
+            <label>参数</label>
+            <div>
+                <div class="col-sm-4">
+                    <input type="number" min="1" max="254" class="form-control" id="numberLampInputID" placeholder="编号">
+                </div>
+                <div class="col-sm-4">
+                    <input type="number" min="0" max="100" class="form-control" id="brightnessInputID" placeholder="亮度">
+                </div>
+                <div class="col-sm-4">
+                    <input type="number" min="0" max="100" class="form-control" id="CCTInputID" placeholder="色温">
+                </div>
+            </div>
+        </div>
+        <hr>
+        <button type="button" class="btn btn-success" id="sendButtonID" onclick="sendCommand()">
+            <div id="sendText">发送</div>
+        </button>
+    </div>
+    <div id="deepInformation" class="btn-group">
+        <button type="button" class="btn btn-default" onclick="informationSerial()">串口信息</button>
+        <button type="button" class="btn btn-default" onclick="changeChannel()">高级</button>
+        <button type="button" class="btn btn-default">备用</button>
+    </div>
+    <!-- 浮窗，默认不显示 -->
+    <div class="modal fade" id="adminLog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:300px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">管理员授权</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="adminName" placeholder="账户">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" id="adminPassword" placeholder="密码">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="adminOperationFunc()" data-dismiss="modal">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 录入灯杆信息 -->
+    <div class="modal fade" id="lampInputInform" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:300px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">路灯信息录入</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="txthmiID" placeholder="界面ID">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="txtactualID" placeholder="组网ID">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="lampModel" placeholder="路灯型号">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="lampInformation" placeholder="备注信息">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="submitData()" data-dismiss="modal">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 关闭延时弹窗 -->
+    <div class="modal fade" id="closeWinDelayID" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:300px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">关闭延时</h4>
+                </div>
+                <div class="modal-body">
+                    <h3 id="countDown"></h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.close()">立即关闭</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="cancelCloseWin()">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="alertWindow" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:300px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">关闭延时</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="alertTxt"></div>
+                </div>
+                <div class="modal-footer">
+                    <!-- <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.close()">立即关闭</button> -->
+                    <!-- <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="cancelCloseWin()">取消</button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 串口信息 -->
+    <div class="modal fade" id="serialModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:1050px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">串口信息</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- <div id="serialInformation"> -->
+                    <div id="error"></div>
+                    <div id="ports"></div>
+                    <!-- </div> -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal -->
+    </div>
+    <!-- 更改信道 -->
+    <div class="modal fade" id="channelChangeID" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:300px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">更改下位机信道</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="number" min="0" max="6" class="form-control" id="channelInputID" placeholder="通信信道">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="changeChannelSend()">发送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 历史数据 -->
+    <div id="drawDataID">
+        <!-- <a href="javascript:;" onclick="closedrawData()" id="closeData">关闭</a> -->
+        <div id="history"></div>
+        <div id="drawFootID" class="btn-group-vertical">
+            <button class="btn btn-default btn-xs" id="controlButtonID" onclick="Lamptoggle()">灯控</button>
+            <hr>
+            <button class="btn btn-danger btn-xs" id="closeData" onclick="closedrawData()">关闭</button>
+        </div>
+    </div>
+    <div id="activeClose"></div>
+    <button type="button" id="closeWindow" class="btn btn-danger" onclick="closeWinDelay()">关闭窗口</button>
+</body>
+<!-- 表格显示 -->
+<div id="tableIDInformation" style="overflow:scroll"></div>
+<!-- 用户功能函数 -->
+<script src="./web/Scripts/SysFun.js"></script>
+<script src="./web/Scripts/serialport/NodeSerialPort.js"></script>
+<script src="./web/Scripts/map/drawMap.js"></script>
+<script src="./web/Scripts/map/mapBasic.js"></script>
+<script src="./web/Scripts/map/OLMaps.js"></script>
+<script src="./web/Scripts/draw/echartsDraw.js"></script>
+
+</html>

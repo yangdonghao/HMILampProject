@@ -1,0 +1,300 @@
+﻿* {
+    font-family: "Microsoft YaHei", 微软雅黑, "宋体";
+    border-radius: 10px;
+}
+
+body {
+    color: #000000;
+    text-align: center;
+    background-color: #ffffff;
+}
+
+#logoImg {
+    background-image: url(../../Source/img/logoClient.png);
+    width: 559px;
+    height: 47px;
+    top: 1%;
+    left: 1%;
+    position: absolute;
+    z-index: 1;
+    background-color: transparent;
+    opacity: 0.7;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    /*    top: 0px;
+    bottom: 0px;*/
+}
+
+#closeWindow {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    z-index: 2;
+    display: none;
+}
+
+/*地图去除放大缩小*/
+
+#map .ol-zoom {
+    display: none;
+}
+
+
+/*路灯在地图界面操作选择*/
+
+#lampOnMapFunction {
+    position: absolute;
+    z-index: 1;
+    left: 0.5%;
+    top: 10%;
+    opacity: 0.85;
+    display: none;
+    background-color: #ffffff;
+}
+
+#commandDisplayID {
+    position: absolute;
+    bottom: 5px;
+    z-index: 1;
+    margin: auto;
+    left: 40%;
+    /*right: 0;*/
+    opacity: 0.8;
+    width: 16%;
+    height: 32%;
+    background-color: #ffffff;
+    color: #000000;
+    display: none;
+    /*background-color: transparent;*/
+}
+
+/*触发用户功能区显示*/
+
+#activeUserFunc {
+    position: absolute;
+    z-index: 2;
+    left: 0%;
+    top: 0%;
+    width: 1%;
+    height: 20%;
+    opacity: 0;
+}
+
+#activeClose {
+    position: absolute;
+    z-index: 1;
+    left: 40%;
+    top: 0%;
+    width: 20%;
+    height: 2%;
+    opacity: 0;
+}
+
+#adminLogin {
+    display: none;
+}
+
+#adminLog {
+    background-color: transparent;
+    opacity: 0.75;
+}
+
+#serialModal {
+    background-color: transparent;
+    opacity: 0.75;
+}
+
+#lampInputInform {
+    background-color: transparent;
+    opacity: 0.75;
+
+}
+
+#closeWinDelayID {
+    opacity: 0.8;
+    background-color: #ffffff;
+}
+
+#activeAdvFunc {
+    position: absolute;
+    z-index: 2;
+    left: 0%;
+    bottom: 0%;
+    width: 5%;
+    height: 2%;
+    opacity: 0;
+}
+
+#numberLampID {
+    width: 30%;
+}
+
+#deepInformation {
+    z-index: 1;
+    position: absolute;
+    left: 1%;
+    bottom: 1%;
+
+    opacity: 0.75;
+    display: none;
+}
+
+/*表格格式*/
+
+#tableIDInformation {
+    z-index: 1;
+    position: absolute;
+    right: 1%;
+    top: 1%;
+    opacity: 0.75;
+    height: 90%;
+    background-color: #ffffff;
+    /*display: none;*/
+}
+
+
+
+/*.table tbody tr td th {
+    vertical-align: middle;
+}*/
+
+#serialInformation {
+    display: none;
+}
+
+.tableTr.a {
+    background-color: #7FCEFF;
+}
+.tableTr.b {
+    background-color: #B2E1FF;
+}
+
+.table-num.a {
+    background-color: #7FCEFF;
+}
+.table-num.b {
+    background-color: #B2E1FF;
+}
+
+.table-time.a {
+    background-color: #7FCEFF;
+}
+.table-time.b {
+    background-color: #B2E1FF;
+}
+
+#test {
+    z-index: 1;
+}
+
+.containerBack {
+    width: 240px;
+    height: 160px;
+    position: absolute;
+    z-index: 999;
+    top: 80px;
+    left: 30px;
+    opacity: 0.5;
+    background-color: #D9D8D7;
+}
+
+.applyImg {
+    width: 88px;
+    height: 30px;
+    position: absolute;
+    z-index: 1000;
+    top: 80px;
+    left: 30px;
+    background-color: #D9D8D7;
+    opacity: 0.8;
+    text-indent: 11px;
+    line-height: 30px;
+    font-size: 15px;
+}
+
+.applyImg:hover {
+    cursor: pointer;
+}
+
+.closeDiv {
+    width: 152px;
+    height: 30px;
+    position: absolute;
+    z-index: 1000;
+    top: 80px;
+    left: 118px;
+    opacity: 0.8;
+    background-color: #D9D8D7;
+}
+
+.closeImg {
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    left: 125px;
+    background-image: url("../Libs/images/Close.png");
+}
+
+.closeImg:hover {
+    cursor: pointer;
+}
+
+.applyContainer {
+    width: 120px;
+    height: 230px;
+    position: absolute;
+    z-index: 1000;
+    top: 110px;
+    right: 30px;
+    box-shadow: 0px 0px 10px #757770;
+    font-size: 13px;
+    display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/****************************************表格开始*********************************************/
+
+
+/****************************************表格结束*********************************************/
+
+
+/****************************************浮于地图logo开始*********************************************/

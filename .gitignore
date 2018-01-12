@@ -1,0 +1,14 @@
+bower_components/
+.tags
+.tags_sorted_by_file
+cmd.exe
+electron-serialport/
+node_modules/
+web/Source/
+web/Libs/
+web/data/
+CSV/
+LICENSE.md
+Sublime.sublime-project
+Sublime.sublime-workspace
+web/OutApp
