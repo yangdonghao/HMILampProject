@@ -393,7 +393,7 @@ function retable() {
                 });
                 map.addLayer(lampLocalLayer);
             }
-            lampLocalLayer.getSource().clear();
+            // lampLocalLayer.getSource().clear();
             tableIDInforFunc(docs);
             // console.log("viewZoom");
         });
@@ -406,7 +406,7 @@ function retable() {
                 });
                 map.addLayer(lampLocalLayer);
             }
-            lampLocalLayer.getSource().clear();
+            // lampLocalLayer.getSource().clear();
             tableIDInforFunc(docs);
             // console.log("viewZoom");
         });
@@ -443,7 +443,7 @@ function addMarkers(resInfoArray) {
             fid: i.toString(),
             hmiID: resInfoArray[i].hmiID
         });
-        markerFeature.setStyle(createLabelTextStyle(preFeature, imgURL, (scale * 0.8), 0));
+        markerFeature.setStyle(createLabelTextStyle(markerFeature, imgURL, (scale * 0.8), 0));
         lampLocalLayer.getSource().addFeature(markerFeature);
         if (lampLocalArray == null) {
             lampLocalArray = new Array();
@@ -554,16 +554,18 @@ function tableIDInforFunc(resInfoArray) {
     for (var i = 0; i < resInfoArray.length; i++) {
         var rowData = resInfoArray[i];
         var upDate = new Date(rowData.upDate);
-        var myYear = upDate.getFullYear().toString().substr(parseInt(upDate.getFullYear().toString().length) - 2);
-        var myMon = ('0' + (upDate.getMonth() + 1)).slice(-2);
-        var myDay = ('0' + upDate.getDate()).slice(-2);
+        // var myYear = upDate.getFullYear().toString().substr(parseInt(upDate.getFullYear().toString().length) - 2);
+        // var myMon = ('0' + (upDate.getMonth() + 1)).slice(-2);
+        // var myDay = ('0' + upDate.getDate()).slice(-2);
         var myHour = ('0' + upDate.getHours()).slice(-2);
         var myMin = ('0' + upDate.getMinutes()).slice(-2);
         var mySec = ('0' + upDate.getSeconds()).slice(-2);
         // substr(parseInt(filesDb[j].length) - 3)
-        var myTime = myYear + "-" + myMon + "-" + myDay + "-" + myHour + "." + myMin + "." + mySec;
+        var myTime = /*myYear + "-" + myMon + "-" + myDay + "-" +*/ myHour + ":" + myMin + ":" + mySec;
         // console.log(myYear);
-
+        if (upDate.getFullYear() < 2018) {
+            myTime = null;
+        }
         tmpHtml += "<tr class='tableTr'><td>" + rowData.hmiID + "</td><td>" + rowData.current + "</td><td>" + rowData.voltage + "</td><td>" +
             myTime + "</td></tr>";
     }
