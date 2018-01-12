@@ -17,7 +17,7 @@ var preFeature = null; //鼠标选中的前一要素
  *  页面初始化，在页面加载完成之后执行
  */
 $(function() {
-    adminRightEndTimer = 1;
+    // adminRightEndTimer = 1;
     // dbInit();
     initMap(); //初始化地图容器
     loadLayers();
@@ -33,13 +33,7 @@ var deleteLampSelect = document.getElementById('deleteLamp');
 var finishLampSelect = document.getElementById('finishLamp');
 var adminOperationSelect = document.getElementsByName('adminOperation');
 
-$("#adminSelect").mousedown(function() {
-    //加延时，checked变化过慢
-    setTimeout(function() {
-        //addLampFunc(addLampSelect.checked);
-        // addLampFunc();
-    }, 200);
-});
+
 /*
  *  地图容器初始化
  */

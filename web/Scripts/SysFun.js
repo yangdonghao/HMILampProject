@@ -1,6 +1,6 @@
 var wait = 5;
-// var adminRightEndTimer = 0;
-var adminRightEndTimer = 1;
+var adminRightEndTimer = 0;
+// var adminRightEndTimer = 1;
 var layer;
 
 $(function() {
