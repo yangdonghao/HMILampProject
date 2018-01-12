@@ -63,7 +63,7 @@ function serialNewData(data) {
 
             } else if (myyymmdd !== yymmdd) {
                 // console.log(2);
-                dataVandA = new Datastore({ filename: './web/dataTool/dataDate/dataVandA' + yymmdd + '.db' });
+                dataVandA = new Datastore({ filename: './web/data/dataDate/dataVandA' + yymmdd + '.db' });
                 dataVandA.loadDatabase(function(err) {
                     dataVandA.insert([{ actualID: actualID, voltage: v, current: c, Date: newDate }], function(err, newDocs) {});
                 });
