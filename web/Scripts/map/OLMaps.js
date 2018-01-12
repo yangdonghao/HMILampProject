@@ -451,93 +451,7 @@ function moveTo(feature) {
     var coordinate = geo.getCoordinates(); //获取要素点坐标
     map.getView().setCenter(coordinate); //设置地图中心点
 }
-/*
- *   显示标注对应数据的详细信息，需要进行一次查询操作
- */
-function showDetailsInfo(tmark) {
-    //解析路灯的查询结果，动态创建
-    //var dataVandA20171220;
-    var actualID = parseInt(tmark.get('info').actualID); //转换为整数
-    //console.log('Data:',isNaN(aaa));
-    myDate = new Date();
-    dataVandA = new Datastore({ filename: './web/data/dataVandA' + myDate.getFullYear() + (myDate.getMonth() + 1) + myDate.getDate() + '.db', autoload: true });
-    var arr = 0;
-    dataVandA.find({ "actualID": actualID }, function(err, docs) {
-        lampMarkerDetailData = docs;
-        if (lampMarkerDetailData.length == 0) { //没有数据，
-            var html = '<div id="ChartRltdiv"></div>';
-            var geo = tmark.getGeometry(); //获取标注要素点的几何
-            var coordinate = geo.getCoordinates(); //获取要素点坐标
-            popupContent.html(html); //设置Popup容器里的内容
 
-            //创建渲染统计图
-
-            var chartID = tmark.get('fid');
-            //console.log('Data:', chartID);
-            //var ChartObj = new FusionCharts("../../Libs/FusionCharts/Column3D.swf", chartID, "300", "200");
-            //ChartObj.render("ChartRltdiv");
-            popup.setPosition(coordinate);
-
-            return;
-        }
-
-
-        var str = lampMarkerDetailData[0].actualID; //console.log('Data:',2);
-        //var dataXml = "<graph caption='" + str + 
-        //"水位信息' yAxisName='水位(m)' baseFontSize='12' baseFont='微软雅黑' showNames='1' decimalPrecision='0' formatNumberScale='0' bgColor='#EEEEEE'  bgAlpha='70'>";
-
-        var dataXml = "<chart caption='" + str + "路灯信息'  " +
-            "xAxisName='Time' yAxisName='电压' baseFontSize='12' baseFont='微软雅黑' showNames='1' decimalPrecision='0' formatNumberScale='0' bgColor='#EEEEEE'  bgAlpha='70'>  "; //numberPrefix前缀
-        var names = new Array();
-        var values = new Array();
-
-        dataXml += "<categories >";
-
-        for (var i = 0; i < lampMarkerDetailData.length; i++) {
-            names[i] = lampMarkerDetailData[i].Date;
-            dataXml += "<category name='" + names[i] + "' />";
-        }
-        dataXml += "</categories>";
-
-        dataXml += "<dataset seriesName='voltage' color='1D8BD1' anchorBorderColor='1D8BD1' anchorBgColor='1D8BD1'>";
-        for (var i = 0; i < lampMarkerDetailData.length; i++) {
-            values[i] = lampMarkerDetailData[i].voltage;
-            dataXml += "<set value='" + values[i] + "' />";
-        }
-        dataXml += "</dataset>";
-
-        dataXml += "<dataset seriesName='current' color='F1683C' anchorBorderColor='F1683C' anchorBgColor='F1683C'>";
-        for (var i = 0; i < lampMarkerDetailData.length; i++) {
-            values[i] = lampMarkerDetailData[i].current;
-            dataXml += "<set value='" + values[i] + "' />";
-        }
-        dataXml += "</dataset>";
-        dataXml += "</chart>";
-
-        if ($("#ChartRltdiv").length > 0) {
-            $("#ChartRltdiv").remove();
-        }
-        var html = '<div id="ChartRltdiv" style="width:300px;height:180px;background:#ffcc33"></div></br>' +
-            '<div class="sqHeader" >水库的信息(单位：m)</div>' +
-            '<div class="sqHeader>' +
-            '<ul>' +
-            '<li>' +
-            '<input class="adfaasf" id="asdfafa" type="checkbox" />' +
-            '<label for="type">添加路灯</label>' +
-            '</li>' +
-            '</ul>' +
-            '</div>';
-
-        var geo = tmark.getGeometry(); //获取标注要素点的几何
-        var coordinate = geo.getCoordinates(); //获取要素点坐标
-        popupContent.html(html); //设置Popup容器里的内容
-
-        //创建渲染统计图
-        var chartID = tmark.get('fid');
-
-        popup.setPosition(coordinate);
-    });
-}
 var tableSort = 0;
 var tableSortHmiID = -1;
 var tableSortTime = 1;
@@ -565,7 +479,6 @@ function tableIDInforFunc(resInfoArray) {
     }
 
     tmpHtml += "</tbody></table>";
-    // <tr><td>Tanmay</td><td>Bangalore</td><td>560001</td><td>Sachin</td></tr></tbody></table>";
     $("#tableIDInformation").text("");
     $("#tableIDInformation").append(tmpHtml);
     //表格操作显示
@@ -579,7 +492,6 @@ function tableIDInforFunc(resInfoArray) {
         $(this).addClass("a").siblings("tr").removeClass("a");
         var index = $(".tableTr").index($(this));
         moveTo(lampLocalArray[index]); //以当前要素为中心点移动地图
-        //showDetailsInfo(lampLocalArray[index]); // 打开popup
         dataToDraw(parseInt(lampLocalArray[index].get('info').actualID), parseInt(lampLocalArray[index].get('info').hmiID));
         $("#drawDataID").show();
     });
@@ -626,15 +538,6 @@ function tableIDInforFunc(resInfoArray) {
 
 
 function showApplyContainer() {
-    // if (showApplyContainerClickNumber % 2 == 0) {
-    //     $("#comApply").hide("slow");
-    //     $(".closeDiv").hide("slow");
-    // } else {
-    //     $("#comApply").show("slow");
-    //     $(".closeDiv").show("slow");
-    // }
-    // showApplyContainerClickNumber++;
-    //console.log('Data:', document.getElementById("imgApply").name.toString());
 
     if (document.getElementById("imgApply").name == "show") {
         document.getElementById("imgApply").name = "hide";
@@ -649,10 +552,6 @@ function showApplyContainer() {
 }
 
 function showDataInfo() {
-    // if($("#datainfo").get(0).checked)
-    //     console.log('checked:',1);
-    // else
-    //     console.log('before:',2);
     if ($("#datainfo").get(0).checked)
         $(".sqDiv").show("slow");
     else
@@ -713,7 +612,7 @@ var createLabelTextStyle = function(feature, imgURL, scale, text) {
         }),
 
     });
-}
+};
 /*备份地图id和坐标*/
 function backupLamp() {
     var saveDate = new Date();
@@ -723,7 +622,6 @@ function backupLamp() {
     var myHour = ('0' + saveDate.getHours()).slice(-2);
     var myMin = ('0' + saveDate.getMinutes()).slice(-2);
     var mySec = ('0' + saveDate.getSeconds()).slice(-2);
-    // substr(parseInt(filesDb[j].length) - 3)
     var myTime = myYear + "-" + myMon + "-" + myDay + "   " + myHour + "-" + myMin + "-" + mySec;
     fs.writeFileSync('./web/data/lampBackups/lampBackup.db', fs.readFileSync('./web/data/lampBackup.db'));
     fs.renameSync('./web/data/lampBackups/lampBackup.db', './web/data/lampBackups/lampBackup' + myTime + '.db');

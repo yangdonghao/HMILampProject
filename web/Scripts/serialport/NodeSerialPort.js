@@ -237,7 +237,6 @@ function NumAscSort(a, b) {
 // }
 // 
 
-
 function informationSerial() {
     SerialPort.list((err, ports) => {
         console.log('ports', ports);
@@ -257,7 +256,6 @@ function informationSerial() {
             tmpHtml += '<th class="text-center">' + headers[i] + '</th>';
         }
         tmpHtml += '</tr></thead>';
-
 
         tmpHtml += "<tbody>";
         for (var j = 0; j < ports.length; j++) {
