@@ -237,7 +237,6 @@ function NumAscSort(a, b) {
 // }
 // 
 
-
 function informationSerial() {
     SerialPort.list((err, ports) => {
         console.log('ports', ports);
