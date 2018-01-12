@@ -40,4 +40,6 @@ created by the awesome electron community.
 
 #### License [CC0 1.0 (Public Domain)](LICENSE.md)
 
-
+## 步骤
+1. 工程文件下载至本地并解压
+2. 本地工程文件复制到该工程目录，重复文件跳过
