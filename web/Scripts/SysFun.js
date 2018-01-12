@@ -54,7 +54,7 @@ $("#lampOnMapFunction").mouseout(function() {
         $("#lampOnMapFunction").hide();
     }, 1000 * 60);
     needPassword = setTimeout(function() {
-        needPasswordFunc();
+        lockOperation();
     }, 1000 * 60 * 30);
     // 1000 * 60 * 30
 });
@@ -87,11 +87,7 @@ $("#advancedOperation").mouseup(function(event) {
     $("#advancedSelectID").collapse("toggle");
 });
 
-function needPasswordFunc() {
 
-    $("#adminSelect").collapse("hide");
-    document.getElementById('finishLamp').checked = true;
-}
 
 function adminOperationFunc() {
     name = document.getElementById("adminName").value;
@@ -114,6 +110,12 @@ function adminOperationFunc() {
     }
 }
 
+// function needPasswordFunc() {
+
+//     $("#adminSelect").collapse("hide");
+//     document.getElementById('finishLamp').checked = true;
+// }
+
 function lockOperation() {
     adminRightEndTimer = 0;
     $("#adminSelect").collapse("hide");
@@ -121,6 +123,7 @@ function lockOperation() {
     $('#adminPassword').val("");
     $('#commandDisplayID').hide();
     $("#advancedSelectID").collapse("hide");
+    document.getElementById('finishLamp').checked = true;
 }
 
 var closeDelayTime;
@@ -167,7 +170,7 @@ function sendDelay() {
             $('#sendButtonID').prop('disabled', false);
         }
     }, 1000);
-    //sendCommand();
+
 }
 
 var needControlWin = 0;

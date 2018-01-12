@@ -257,7 +257,6 @@ function informationSerial() {
         }
         tmpHtml += '</tr></thead>';
 
-
         tmpHtml += "<tbody>";
         for (var j = 0; j < ports.length; j++) {
             var rowData = ports[j];
