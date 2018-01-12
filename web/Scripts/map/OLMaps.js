@@ -135,7 +135,7 @@ function initMap() {
         var pixel = map.getEventPixel(e.originalEvent);
         var hit = map.hasFeatureAtPixel(pixel);
         if (addLampSelect.checked == true) {
-            map.getTargetElement().style.cursor = hit ? "pointer" : "url('./web/Libs/images/aaa.ico'),auto";
+            map.getTargetElement().style.cursor = hit ? "pointer" : "url('./web/Source/img/cursor.ico'),auto";
         } else if (addLampSelect.checked == false) {
             map.getTargetElement().style.cursor = hit ? "pointer" : "";
         }
