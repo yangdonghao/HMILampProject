@@ -1,6 +1,6 @@
 const SerialPort = require('serialport');
 // const createTable = require('data-table');
-const port = new SerialPort('com2', {
+const port = new SerialPort('com5', {
     baudRate: 115200,
     autoOpen: false
 });
@@ -27,7 +27,7 @@ port.on('open', function() {
 
 //Switches the port into "flowing mode"
 port.on('data', function(data) {
-    console.log('Data:', data);
+    // console.log('Data:', data);
     serialNewData(data);
 });
 
@@ -35,6 +35,7 @@ function serialNewData(data) {
     var returnData = new Uint8Array(32);
     returnData[0] = 0x6A;
     returnData[1] = 0xA6;
+    var newDate = new Date();
 
     if (data[0] == 0x5A && data[1] == 0xA5) {
         if (data[2] == 0x03) //获得电流电压数据，并存入数据库
@@ -44,7 +45,7 @@ function serialNewData(data) {
             var actualID = data[3];
             var v = data[4] + data[5] * 256;
             var c = data[6] + data[7] * 256;
-            var newDate = new Date();
+
             var yymmdd = newDate.getFullYear().toString() +
                 ('0' + (myDate.getMonth()) + 1).slice(-2).toString() +
                 ('0' + myDate.getDate()).slice(-2);
@@ -76,6 +77,14 @@ function serialNewData(data) {
             returnData[4] = data[3];
             returnData[5] = data[4];
             returnNetID(data);
+            port.write(returnData);
+        } else if (data[2] == 0x02) { //返回时间
+            returnData[2] = 0xF2;
+            timertemp = newDate.getHours() * 3600 + newDate.getMinutes() * 60 + newDate.getSeconds();
+
+            returnData[3] = timertemp / 256; //读取数据库中id
+            returnData[4] = timertemp % 256;
+            // console.log('returnData:', returnData);
             port.write(returnData);
         }
     }
