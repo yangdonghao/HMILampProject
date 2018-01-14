@@ -30,3 +30,28 @@ function addLampFunc() {
         sourceDraw = null;
     }
 }
+
+//贴边磁吸效果
+var point = null;
+var line = null;
+var displaySnap = function(coordinate) {
+    var closestFeature = vectorSource.getClosestFeatureToCoordinate(coordinate);
+    if (closestFeature === null) {
+        point = null;
+        line = null;
+    } else {
+        var geometry = closestFeature.getGeometry();
+        var closestPoint = geometry.getClosestPoint(coordinate);
+        if (point === null) {
+            point = new ol.geom.Point(closestPoint);
+        } else {
+            point.setCoordinates(closestPoint);
+        }
+        if (line === null) {
+            line = new ol.geom.LineString([coordinate, closestPoint]);
+        } else {
+            line.setCoordinates([coordinate, closestPoint]);
+        }
+    }
+    map.render();
+};
