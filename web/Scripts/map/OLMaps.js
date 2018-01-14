@@ -47,10 +47,105 @@ var Modify = {
     }
 };
 
-var timeINt = self.setInterval("clock()", 5000);
+var mysource = new ol.source.Vector({
+    wrapX: false
+});
+var vector = new ol.layer.Vector({
+    source: mysource
+});
+map.addLayer(vector);
 
-function clock() {
-    console.log('click');
+function addRandomFeature() {
+    //var x = Math.random() * 360 - 180;
+    //var y = Math.random() * 180 - 90;
+    console.log(warning.length);
+    // warning.length
+
+
+    
+    var x = 118.308;
+    var y = 32.27737;
+    var geom = new ol.geom.Point(ol.proj.transform([x, y],
+        'EPSG:4326', 'EPSG:3857'));
+    var feature = new ol.Feature(geom);
+    mysource.addFeature(feature);
+}
+var duration = 3000;
+
+function flash(feature) {
+    var start = new Date().getTime();
+    var listenerKey;
+
+    function animate(event) {
+        var vectorContext = event.vectorContext;
+        var frameState = event.frameState;
+        var flashGeom = feature.getGeometry().clone();
+        var elapsed = frameState.time - start;
+        var elapsedRatio = elapsed / duration;
+        // radius will be 5 at start and 30 at end.
+        var radius = ol.easing.easeOut(elapsedRatio) * 25 + 5;
+        var opacity = ol.easing.easeOut(1 - elapsedRatio);
+
+        var style = new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: radius,
+                snapToPixel: false,
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(255, 0, 0, ' + opacity + ')',
+                    width: 0.25 + opacity
+                })
+            })
+        });
+
+        vectorContext.setStyle(style);
+        vectorContext.drawGeometry(flashGeom);
+        if (elapsed > duration) {
+            ol.Observable.unByKey(listenerKey);
+            return;
+        }
+        // tell OpenLayers to continue postcompose animation
+        map.render();
+    }
+    listenerKey = map.on('postcompose', animate);
+}
+
+mysource.on('addfeature', function(e) {
+    flash(e.feature);
+});
+window.setInterval(addRandomFeature, 3000);
+
+
+var timeINt = self.setInterval("overtime()", 1000); //timeINt = self.clearInterval(timeINt); 
+var warning = new Array();
+
+function overtime() {
+    // console.log('2s');
+
+
+    var j = 0;
+    lampLocal.find({}, function(err, docs) {
+         // console.log(docs.length);
+        for (var i = 0; i < docs.length; i++) {
+            var rowData = docs[i];
+            var newTime = new Date();
+            var timeDifference = (newTime.getTime() - new Date(rowData.upDate).getTime()) / (60 * 1000);
+
+            if (timeDifference > 30) {
+                
+                warning[j] = new Array();
+                warning[j][0] = rowData.east;
+                warning[j][0] = rowData.north;
+                j++;
+            }
+            if (i == (docs.length - 1)) {
+                // console.log(warning.length);
+
+            }
+            // newTime =new Date(newTime-upDate);
+            // console.log(timeDifference);
+            // console.log(docs[i].upDate);
+        }
+    });
 }
 
 var hmiIDGlobal = null;
