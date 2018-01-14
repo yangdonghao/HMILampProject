@@ -185,7 +185,6 @@ function initMap() {
      * 为map添加点击事件监听，渲染弹出popup
      */
     map.on('singleclick', function(evt) {
-
         // var adminOperation = document.getElementsByName("adminOperation");
         if (addLampSelect.checked) {
             var coordinate = evt.coordinate;
@@ -347,16 +346,104 @@ function initMap() {
         }
     });
     map.on('click', function(evt) {
-        // console.log('click');
+        console.log('click');
+
     });
     //checkZoom为调用的函数
     map.getView().on('change:resolution', checkZoom);
 }
 
-var timeINt = self.setInterval("clock()", 5000);
+var mysource = new ol.source.Vector({
+    wrapX: false
+});
+var vector = new ol.layer.Vector({
+    source: mysource
+});
+map.addLayer(vector);
 
-function clock() {
-    console.log('click');
+function addRandomFeature() {
+    //var x = Math.random() * 360 - 180;
+    //var y = Math.random() * 180 - 90;
+    console.log("addRandomFeature");
+    
+    var x = 118.308;
+    var y = 32.27737;
+    var geom = new ol.geom.Point(ol.proj.transform([x, y],
+        'EPSG:4326', 'EPSG:3857'));
+    var feature = new ol.Feature(geom);
+    mysource.addFeature(feature);
+}
+var duration = 3000;
+
+function flash(feature) {
+    var start = new Date().getTime();
+    var listenerKey;
+
+    function animate(event) {
+        var vectorContext = event.vectorContext;
+        var frameState = event.frameState;
+        var flashGeom = feature.getGeometry().clone();
+        var elapsed = frameState.time - start;
+        var elapsedRatio = elapsed / duration;
+        // radius will be 5 at start and 30 at end.
+        var radius = ol.easing.easeOut(elapsedRatio) * 25 + 5;
+        var opacity = ol.easing.easeOut(1 - elapsedRatio);
+
+        var style = new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: radius,
+                snapToPixel: false,
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(255, 0, 0, ' + opacity + ')',
+                    width: 0.25 + opacity
+                })
+            })
+        });
+
+        vectorContext.setStyle(style);
+        vectorContext.drawGeometry(flashGeom);
+        if (elapsed > duration) {
+            ol.Observable.unByKey(listenerKey);
+            return;
+        }
+        // tell OpenLayers to continue postcompose animation
+        map.render();
+    }
+    listenerKey = map.on('postcompose', animate);
+}
+
+mysource.on('addfeature', function(e) {
+    flash(e.feature);
+});
+window.setInterval(addRandomFeature, 3000);
+
+
+var timeINt = self.setInterval("overtime()", 1000); //timeINt = self.clearInterval(timeINt);  
+function overtime() {
+    // console.log('2s');
+
+    var warning = new Array();
+    var j = 0;
+    lampLocal.find({}, function(err, docs) {
+        // console.log(docs.length);
+        for (var i = 0; i < docs.length; i++) {
+            var rowData = docs[i];
+            var newTime = new Date();
+            var timeDifference = (newTime.getTime() - new Date(rowData.upDate).getTime()) / (60 * 1000);
+
+            if (timeDifference > 30) {
+                j++;
+                warning[j] = rowData.actualID;
+            }
+            if (i == (docs.length - 1)) {
+
+
+            }
+            // newTime =new Date(newTime-upDate);
+            // console.log(timeDifference);
+            // console.log(docs[i].upDate);
+        }
+    });
 }
 
 var stroke = new ol.style.Stroke({
@@ -499,7 +586,7 @@ function addMarkers(resInfoArray) {
         markerFeature = new ol.Feature({
             geometry: new ol.geom.Point(coordinate), //几何信息（坐标点）
 
-            featureType: "lamp", 
+            featureType: "lamp",
 
             info: resInfoArray[i], //标注的详细信息
             imgURL: imgURL, //标注图标的URL地址
