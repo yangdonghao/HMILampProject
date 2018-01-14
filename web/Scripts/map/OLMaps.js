@@ -364,7 +364,9 @@ map.addLayer(vector);
 function addRandomFeature() {
     //var x = Math.random() * 360 - 180;
     //var y = Math.random() * 180 - 90;
-    console.log("addRandomFeature");
+    console.log(warning.length);
+
+
     
     var x = 118.308;
     var y = 32.27737;
@@ -418,25 +420,30 @@ mysource.on('addfeature', function(e) {
 window.setInterval(addRandomFeature, 3000);
 
 
-var timeINt = self.setInterval("overtime()", 1000); //timeINt = self.clearInterval(timeINt);  
+var timeINt = self.setInterval("overtime()", 1000); //timeINt = self.clearInterval(timeINt); 
+var warning = new Array();
+
 function overtime() {
     // console.log('2s');
 
-    var warning = new Array();
+
     var j = 0;
     lampLocal.find({}, function(err, docs) {
-        // console.log(docs.length);
+         // console.log(docs.length);
         for (var i = 0; i < docs.length; i++) {
             var rowData = docs[i];
             var newTime = new Date();
             var timeDifference = (newTime.getTime() - new Date(rowData.upDate).getTime()) / (60 * 1000);
 
             if (timeDifference > 30) {
+                
+                warning[j] = new Array();
+                warning[j][0] = rowData.east;
+                warning[j][0] = rowData.north;
                 j++;
-                warning[j] = rowData.actualID;
             }
             if (i == (docs.length - 1)) {
-
+                // console.log(warning.length);
 
             }
             // newTime =new Date(newTime-upDate);
