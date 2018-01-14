@@ -44,13 +44,19 @@ var Modify = {
     init: function() {
         //初始化一个交互选择控件,并添加到地图容器中
         this.select = new ol.interaction.Select({
-            condition: ol.events.condition.doubleClick,
+            condition: function(event) {
+                if (addLampSelect.checked) {
+                    return ol.events.condition.doubleClick(event);
+                } else {
+                    return false;
+                }
+            },
             layers: lampLocalLayer
         });
         map.addInteraction(this.select);
         //初始化一个交互编辑控件，并添加到地图容器中
         this.modify = new ol.interaction.Modify({
-            features: this.select.getFeatures() //选中的要素
+            features: this.select.getFeatures(), //选中的要素
         });
         map.addInteraction(this.modify);
         //设置几何图形变更的处理
@@ -170,20 +176,15 @@ function initMap() {
             //判断当前单击处是否有要素，捕获到要素时弹出   popup
             feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) { return feature; });
             if (feature) {
-                try {
-                    var actualID = parseInt(feature.get('info').actualID); //转换为整数
-                    // console.log('ok', actualID);
-                    dataToDraw(parseInt(feature.get('info').actualID), parseInt(feature.get('info').hmiID));
-                    $("#drawDataID").show();
-                } catch (ex) {
-                    // console.log('catch');
+                var type = feature.get('featureType');
+                if (type == undefined) {
                     return;
                 }
-                // console.log(feature.get('info').actualID);
-                // if (feature.get('info').actualID != null) {
-                //     dataToDraw(parseInt(feature.get('info').actualID));
-                //     $("#drawDataID").show();
-                // }
+                var actualID = parseInt(feature.get('info').actualID); //转换为整数
+                // console.log('ok', actualID);
+                dataToDraw(parseInt(feature.get('info').actualID), parseInt(feature.get('info').hmiID));
+                $("#drawDataID").show();
+
 
             }
         } else if (deleteLampSelect.checked) {
@@ -191,6 +192,10 @@ function initMap() {
             //判断当前单击处是否有要素，捕获到要素时删除   灯
             feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) { return feature; });
             if (feature) {
+                var type = feature.get('featureType');
+                if (type == undefined) {
+                    return;
+                }
                 // var geo = feature.getGeometry(); //获取标注要素点的几何
                 // var coordinate = geo.getCoordinates(); //获取要素点坐标
                 var deletehmiID = feature.get('hmiID');
@@ -224,20 +229,34 @@ function initMap() {
      * 为map添加move事件监听，变更图标大小实现选中要素的动态效果
      */
     map.on('pointermove', function(evt) {
-        if (evt.dragging) {
+        if (evt.dragging == true) {
             // console.log('dragging');
-            isDragging = true;
-            Modify.setActive(true); //激活几何图形修改控件;
+            if (addLampSelect.checked) {
+                isDragging = true;
+                Modify.setActive(true); //激活几何图形修改控件;
+            }
 
-        } else {
-            if (isDragging == true) {
-                console.log('not');
+        } else if (evt.dragging == false) {
+            if (isDragging == true && addLampSelect.checked) {
+                // console.log('not');
                 isDragging = false;
                 Modify.setActive(false);
                 Modify.setActive(true);
                 //判断当前鼠标悬停位置处是否有要素，捕获到要素时设置图标样式
                 feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) { return feature; });
                 if (feature) {
+                    var type = feature.get('featureType');
+                    if (type == undefined) {
+                        hmiIDGlobal = null;
+                        return;
+                    }
+                    if (feature.get('hmiID') != hmiIDGlobal) {
+                        console.log('hmiID不同');
+                        hmiIDGlobal = null;
+                        return;
+                    }
+                    // if(feature.get('hmiID')==)
+                    console.log('移动结束', parseInt(hmiIDGlobal));
                     var geo = feature.getGeometry(); //获取标注要素点的几何
                     var coordinate = geo.getCoordinates(); //获取要素点坐标
                     // console.log('coordinate:', coordinate);
@@ -245,7 +264,6 @@ function initMap() {
                     lampLocal.update({ hmiID: parseInt(hmiIDGlobal) }, { $set: { east: coordinate[0], north: coordinate[1] } }, { upsert: true },
                         function(err, numAffected) {
                             // console.log('ok', numAffected);
-                            hmiIDGlobal = null;
                             lampLocal.loadDatabase(function(err) {
                                 // console.log(err);
                                 remark();
@@ -254,20 +272,20 @@ function initMap() {
                     lampBackup.update({ hmiID: parseInt(hmiIDGlobal) }, { $set: { east: coordinate[0], north: coordinate[1] } }, { upsert: true },
                         function(err, numAffected) {
                             // console.log('ok', numAffected);
-
                             lampBackup.loadDatabase(function(err) {
                                 backupLamp();
                             });
                         });
+                    hmiIDGlobal = null;
                 }
             }
             // var coordinate = evt.coordinate;
             //判断当前鼠标悬停位置处是否有要素，捕获到要素时设置图标样式
             feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) { return feature; });
             if (feature) {
-                // console.log('feature');
-                var type = feature.get('type');
-                if ((type == undefined) || (type == "tfMarker") || (type == "tfCircle")) {
+                // console.log('feature', feature);
+                var type = feature.get('featureType');
+                if (type == undefined) {
                     return;
                 }
                 // console.log('feature2');
@@ -293,10 +311,17 @@ function initMap() {
         }
     });
     map.on('dblclick', function(evt) {
-        feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) { return feature; });
-        if (feature) {
-            if (hmiIDGlobal == null)
-                hmiIDGlobal = feature.get('hmiID');
+        if (addLampSelect.checked) {
+            feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, lampLocalLayer) { return feature; });
+            if (feature) {
+                var type = feature.get('featureType');
+                if (type == undefined) {
+                    return;
+                }
+                //mark
+                if (hmiIDGlobal == null)
+                    hmiIDGlobal = feature.get('hmiID');
+            }
         }
     });
     map.on('click', function(evt) {
@@ -405,9 +430,7 @@ function retable() {
             // console.log("viewZoom");
         });
     }
-
 }
-
 
 /*
  *  根据后台返回的实时水情数据添加标注
@@ -431,7 +454,7 @@ function addMarkers(resInfoArray) {
         //新建标注（Vector要素），通过矢量图层添加到地图容器中
         markerFeature = new ol.Feature({
             geometry: new ol.geom.Point(coordinate), //几何信息（坐标点）
-            type: "river", //类型（河流）
+            featureType: "lamp", //类型（河流）
             info: resInfoArray[i], //标注的详细信息
             imgURL: imgURL, //标注图标的URL地址
             fid: i.toString(),
