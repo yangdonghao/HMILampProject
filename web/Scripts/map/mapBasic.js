@@ -55,3 +55,5 @@ var displaySnap = function(coordinate) {
     }
     map.render();
 };
+
+

@@ -138,6 +138,16 @@ map = new ol.Map({
     }).extend([])
 });
 
+map.on('postcompose', function(evt) {
+    var vectorContext = evt.vectorContext;
+    vectorContext.setStyle(styleMagnetism);
+    if (point !== null) {
+        vectorContext.drawGeometry(point);
+    }
+    if (line !== null) {
+        vectorContext.drawGeometry(line);
+    }
+});
 
 function initMap() {
 
@@ -342,14 +352,12 @@ function initMap() {
     //checkZoom为调用的函数
     map.getView().on('change:resolution', checkZoom);
 }
-<<<<<<< HEAD
+
 var timeINt = self.setInterval("clock()", 5000);
 
 function clock() {
-
     console.log('click');
 }
-=======
 
 var stroke = new ol.style.Stroke({
     color: 'rgba(255,255,0,0.9)',
@@ -363,19 +371,8 @@ var styleMagnetism = new ol.style.Style({
     })
 });
 
-map.on('postcompose', function(evt) {
-    var vectorContext = evt.vectorContext;
-    vectorContext.setStyle(styleMagnetism);
-    if (point !== null) {
-        vectorContext.drawGeometry(point);
-    }
-    if (line !== null) {
-        vectorContext.drawGeometry(line);
-    }
-});
 
 
->>>>>>> 99c7314bb465f5e81c445ed3e00c34f4c063197d
 var hmiIDGlobal = null;
 
 /***********************************调用数据库数据地图显示start*******************************/
@@ -478,10 +475,9 @@ function retable() {
     }
 }
 
-<<<<<<< HEAD
-=======
+
 var markerFeature; //标注（矢量要素）
->>>>>>> 99c7314bb465f5e81c445ed3e00c34f4c063197d
+
 /*
  *  
  */
@@ -502,11 +498,9 @@ function addMarkers(resInfoArray) {
         //新建标注（Vector要素），通过矢量图层添加到地图容器中
         markerFeature = new ol.Feature({
             geometry: new ol.geom.Point(coordinate), //几何信息（坐标点）
-<<<<<<< HEAD
-            featureType: "lamp", //类型（河流）
-=======
-            type: "river",
->>>>>>> 99c7314bb465f5e81c445ed3e00c34f4c063197d
+
+            featureType: "lamp", 
+
             info: resInfoArray[i], //标注的详细信息
             imgURL: imgURL, //标注图标的URL地址
             fid: i.toString(),
