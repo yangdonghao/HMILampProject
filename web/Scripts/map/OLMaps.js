@@ -13,6 +13,11 @@ var popupContent = $("#popup-content");
 var popupCloser = $("#popup-closer");
 
 var preFeature = null; //鼠标选中的前一要素
+//矢量图层资源
+var vectorSource = new ol.source.Vector({
+    features: markerFeature,
+    wrapX: false
+});
 /*
  *  页面初始化，在页面加载完成之后执行
  */
@@ -95,43 +100,47 @@ function deleteFile(path) {
     }
 }
 
+//地图初始化Start**********************************
+//底层图层
+basicLayer = new ol.layer.Tile({
+    //source: new ol.source.OSM()
+    source: new ol.source.XYZ({
+        url: './web/Source/offlineTile/{z}/{x}/{y}.png'
+    })
+});
+
+//初始化地图容器
+map = new ol.Map({
+    // controls: ol.control.defaults().extend([
+    //     new ol.control.FullScreen()
+    // ]),
+    layers: [basicLayer],
+    view: new ol.View({
+        //extent: [118.2821989059, 32.2739258051, 118.3194923401, 32.2822528613],
+        //extent: ol.proj.transform([118.2821989059, 32.2739258051, 118.3194923401, 32.2822528613],'EPSG:4326', 'EPSG:3857'),
+        extent: ol.proj.transformExtent([118.2885, 32.2739258051, 118.316, 32.2822528613], 'EPSG:4326', 'EPSG:3857'),
+        // 32.2817086326,118.2821989059
+        // 32.2744156531,118.2827782631
+        // 32.2739258051,118.3194923401
+        // 32.2822528613,118.3177757263
+        center: ol.proj.transform([118.308, 32.27737], 'EPSG:4326', 'EPSG:3857'),
+        zoom: 16,
+        minZoom: 16,
+        maxZoom: 21
+
+    }),
+    // logo: {src: '../img/face_monkey.png', href: 'http://www.openstreetmap.org/'},
+    logo: false,
+    // logo: {src: './web/Source/img/logo.ico'},
+    target: 'map',
+    interactions: ol.interaction.defaults({
+        doubleClickZoom: false,
+    }).extend([])
+});
+
+
 function initMap() {
-    //底层图层
-    basicLayer = new ol.layer.Tile({
-        //source: new ol.source.OSM()
-        source: new ol.source.XYZ({
-            url: './web/Source/offlineTile/{z}/{x}/{y}.png'
-        })
-    });
 
-    //初始化地图容器
-    map = new ol.Map({
-        // controls: ol.control.defaults().extend([
-        //     new ol.control.FullScreen()
-        // ]),
-        layers: [basicLayer],
-        view: new ol.View({
-            //extent: [118.2821989059, 32.2739258051, 118.3194923401, 32.2822528613],
-            //extent: ol.proj.transform([118.2821989059, 32.2739258051, 118.3194923401, 32.2822528613],'EPSG:4326', 'EPSG:3857'),
-            extent: ol.proj.transformExtent([118.2885, 32.2739258051, 118.316, 32.2822528613], 'EPSG:4326', 'EPSG:3857'),
-            // 32.2817086326,118.2821989059
-            // 32.2744156531,118.2827782631
-            // 32.2739258051,118.3194923401
-            // 32.2822528613,118.3177757263
-            center: ol.proj.transform([118.308, 32.27737], 'EPSG:4326', 'EPSG:3857'),
-            zoom: 16,
-            minZoom: 16,
-            maxZoom: 21
-
-        }),
-        // logo: {src: '../img/face_monkey.png', href: 'http://www.openstreetmap.org/'},
-        logo: false,
-        // logo: {src: './web/Source/img/logo.ico'},
-        target: 'map',
-        interactions: ol.interaction.defaults({
-            doubleClickZoom: false,
-        }).extend([])
-    });
     Modify.init(); //初始化几何图形修改控件
     Modify.setActive(true); //激活几何图形修改控件;
     /**
@@ -309,6 +318,9 @@ function initMap() {
                 }
             }
         }
+        // 磁吸效果
+        var coordinateTemp = map.getEventCoordinate(evt.originalEvent);
+        displaySnap(coordinateTemp);
     });
     map.on('dblclick', function(evt) {
         if (addLampSelect.checked) {
@@ -330,12 +342,40 @@ function initMap() {
     //checkZoom为调用的函数
     map.getView().on('change:resolution', checkZoom);
 }
+<<<<<<< HEAD
 var timeINt = self.setInterval("clock()", 5000);
 
 function clock() {
 
     console.log('click');
 }
+=======
+
+var stroke = new ol.style.Stroke({
+    color: 'rgba(255,255,0,0.9)',
+    width: 3
+});
+var styleMagnetism = new ol.style.Style({
+    stroke: stroke,
+    image: new ol.style.Circle({
+        radius: 10,
+        stroke: stroke
+    })
+});
+
+map.on('postcompose', function(evt) {
+    var vectorContext = evt.vectorContext;
+    vectorContext.setStyle(styleMagnetism);
+    if (point !== null) {
+        vectorContext.drawGeometry(point);
+    }
+    if (line !== null) {
+        vectorContext.drawGeometry(line);
+    }
+});
+
+
+>>>>>>> 99c7314bb465f5e81c445ed3e00c34f4c063197d
 var hmiIDGlobal = null;
 
 /***********************************调用数据库数据地图显示start*******************************/
@@ -348,7 +388,7 @@ function loadLayers() {
             if (lampLocalLayer == null) {
                 //实时水情标注的矢量图层
                 lampLocalLayer = new ol.layer.Vector({
-                    source: new ol.source.Vector()
+                    source: vectorSource
                 });
                 map.addLayer(lampLocalLayer);
             }
@@ -362,7 +402,7 @@ function loadLayers() {
             if (lampLocalLayer == null) {
                 //实时水情标注的矢量图层
                 lampLocalLayer = new ol.layer.Vector({
-                    source: new ol.source.Vector()
+                    source: vectorSource
                 });
                 map.addLayer(lampLocalLayer);
             }
@@ -382,7 +422,7 @@ function remark() {
             if (lampLocalLayer == null) {
                 //实时水情标注的矢量图层
                 lampLocalLayer = new ol.layer.Vector({
-                    source: new ol.source.Vector()
+                    source: vectorSource
                 });
                 map.addLayer(lampLocalLayer);
             }
@@ -395,7 +435,7 @@ function remark() {
             if (lampLocalLayer == null) {
                 //实时水情标注的矢量图层
                 lampLocalLayer = new ol.layer.Vector({
-                    source: new ol.source.Vector()
+                    source: vectorSource
                 });
                 map.addLayer(lampLocalLayer);
             }
@@ -414,7 +454,7 @@ function retable() {
             if (lampLocalLayer == null) {
                 //实时水情标注的矢量图层
                 lampLocalLayer = new ol.layer.Vector({
-                    source: new ol.source.Vector()
+                    source: vectorSource
                 });
                 map.addLayer(lampLocalLayer);
             }
@@ -427,7 +467,7 @@ function retable() {
             if (lampLocalLayer == null) {
                 //实时水情标注的矢量图层
                 lampLocalLayer = new ol.layer.Vector({
-                    source: new ol.source.Vector()
+                    source: vectorSource
                 });
                 map.addLayer(lampLocalLayer);
             }
@@ -438,20 +478,22 @@ function retable() {
     }
 }
 
+<<<<<<< HEAD
+=======
+var markerFeature; //标注（矢量要素）
+>>>>>>> 99c7314bb465f5e81c445ed3e00c34f4c063197d
 /*
- *  根据后台返回的实时水情数据添加标注
+ *  
  */
 function addMarkers(resInfoArray) {
     if (lampLocalLayer == null) {
-        //实时水情标注的矢量图层
+
         lampLocalLayer = new ol.layer.Vector({
-            source: new ol.source.Vector()
+            source: vectorSource
         });
         map.addLayer(lampLocalLayer);
     }
-    var markerFeature; //标注（矢量要素）
 
-    //实时水情--河流信息可显示
     for (var i = 0; i < resInfoArray.length; i++) {
         var lon = resInfoArray[i].east; //X值
         var lat = resInfoArray[i].north; //Y值
@@ -460,7 +502,11 @@ function addMarkers(resInfoArray) {
         //新建标注（Vector要素），通过矢量图层添加到地图容器中
         markerFeature = new ol.Feature({
             geometry: new ol.geom.Point(coordinate), //几何信息（坐标点）
+<<<<<<< HEAD
             featureType: "lamp", //类型（河流）
+=======
+            type: "river",
+>>>>>>> 99c7314bb465f5e81c445ed3e00c34f4c063197d
             info: resInfoArray[i], //标注的详细信息
             imgURL: imgURL, //标注图标的URL地址
             fid: i.toString(),
