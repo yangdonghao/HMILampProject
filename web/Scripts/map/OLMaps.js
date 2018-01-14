@@ -365,6 +365,7 @@ function addRandomFeature() {
     //var x = Math.random() * 360 - 180;
     //var y = Math.random() * 180 - 90;
     console.log(warning.length);
+    // warning.length
 
 
     
