@@ -330,6 +330,12 @@ function initMap() {
     //checkZoom为调用的函数
     map.getView().on('change:resolution', checkZoom);
 }
+var timeINt = self.setInterval("clock()", 5000);
+
+function clock() {
+
+    console.log('click');
+}
 var hmiIDGlobal = null;
 
 /***********************************调用数据库数据地图显示start*******************************/
